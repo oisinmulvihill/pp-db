@@ -10,7 +10,7 @@ def get_metadata():
 md = get_metadata()
 
 
-Name='pp.common.db'
+Name='pp-common-db'
 ProjecUrl="" #""
 Version=md['version']
 Author='Oisin Mulvihill, Edward Easton'

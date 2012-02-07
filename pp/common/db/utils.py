@@ -263,7 +263,7 @@ def generic_get(obj, id_attr='id'):
         key = getattr(item, id_attr, item)
         query = query.filter_by(**{id_attr : key})
         if not query.count():
-            raise DBGetError("The %s '%s' was not found!" % (obj,p))
+            raise DBGetError("The %s '%s' was not found!" % (obj,item))
         return query.first()
     return get
 
