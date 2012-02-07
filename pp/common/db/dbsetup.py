@@ -54,7 +54,7 @@ __modules = []
 __mappers = []
 
 def setup( modules = [], mappers = [] ):
-    """ 
+    """
       * init(tables): Create a set of mappers using the given lookup of tables
 
      This can safely be called multiple times.
@@ -86,9 +86,9 @@ def init(uri, pool_size=5, pool_max_overflow=10, pool_timeout=30, pool_recycle=-
 
     bind = sqlalchemy.create_engine(
         uri,
-        poolclass=sqlalchemy.pool.QueuePool, 
-        pool_size=pool_size, 
-        max_overflow=pool_max_overflow, 
+        poolclass=sqlalchemy.pool.QueuePool,
+        pool_size=pool_size,
+        max_overflow=pool_max_overflow,
         pool_recycle=pool_recycle,
         echo=False,
         echo_pool=False,
@@ -109,7 +109,7 @@ def init(uri, pool_size=5, pool_max_overflow=10, pool_timeout=30, pool_recycle=-
     # Pass the tables into all the mappers
     for mod in __mappers :
         mod.init(tables)
-        
+
 
 def init_with_session(bind, session):
     """ As above but with a pre-existing session, eg from a multithreaded webserver """
@@ -131,7 +131,7 @@ def init_with_session(bind, session):
         __mappers.extend(mod_mappers)
 
 def create():
-    """Called to create all the tables required for the modules 
+    """Called to create all the tables required for the modules
        passed in via the :meth:`setup` method.
     """
     get_log().info("create: starting project wide create...")
@@ -144,7 +144,7 @@ def create():
 
 
 def destroy():
-    """Called to destroy all the tables required for the modules 
+    """Called to destroy all the tables required for the modules
        passed in via the :meth:`setup` method.
     """
     get_log().warn("destroy: starting project wide destroy...")

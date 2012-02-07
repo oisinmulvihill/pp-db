@@ -3,7 +3,7 @@ Common database module
 """
 import uuid
 
-# This is the instance all declaratives must use or 
+# This is the instance all declaratives must use or
 from setup import Base
 
 
@@ -12,7 +12,7 @@ def session():
     Create a session based on the one set up by the dbsetup.init.
 
     :returns: An instance of the Session class.
-    
+
     """
     from setup import Session
     assert Session, "Please setup the database before attempting to use the session"
@@ -43,10 +43,10 @@ def tables():
     return tables
 
 def guid():
-    """ 
+    """
     Returns a database GUID.
     :rtype:   String
-    :return:  A string usable by database tables requiring a GUID for their ID. 
+    :return:  A string usable by database tables requiring a GUID for their ID.
     """
     return str(uuid.uuid1()).upper()
 

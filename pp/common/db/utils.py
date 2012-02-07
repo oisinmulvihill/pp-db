@@ -3,11 +3,11 @@
 ==================================================================================
 
 .. module:: utils
-   :synopsis: 
+   :synopsis:
 .. moduleauthor:: Edward Easton<edward.easton@foldingsoftware.com>
 .. sectionauthor::  Edward Easton<edward.easton@foldingsoftware.com>
 
-.. versionadded:: 
+.. versionadded::
 
 The :mod:`commondb.utils` module contains some commonly used methods and functions.
 """
@@ -35,14 +35,14 @@ def generic_constructor(db_item, properties=[], **kwargs) :
     return res
 
 
-def paginate_find(table_or_query, constructor=generic_constructor, filter={}, sort_by=None, sort_order='asc', 
+def paginate_find(table_or_query, constructor=generic_constructor, filter={}, sort_by=None, sort_order='asc',
                   count=False, offset=None, limit=None, aggregate=False, query=None, sess=None, relations=[], **kw):
     """
-    Generic paginating database find method. 
+    Generic paginating database find method.
     Called to find one, all or selection of database data entries.
 
     :param table_or_query:   Declaritive base table instance to operate on, or a dict query descriptor
-    :param constructor:   Return object constructor method. 
+    :param constructor:   Return object constructor method.
     :param filter:  Filter dict, eg {'colname':'value'}
     :param count:   Return total number of results in a tuple: (count, results)
     :param offset:  Return results offset by this number of records
@@ -56,27 +56,27 @@ def paginate_find(table_or_query, constructor=generic_constructor, filter={}, so
     :param sess:    Use in unit testing to override the internal session creation.
 
 
-    :returns: If count was set: a tuple of (total, results), otherwise just the results. 
-              The results are a list of objects representing entries in the table or an 
+    :returns: If count was set: a tuple of (total, results), otherwise just the results.
+              The results are a list of objects representing entries in the table or an
               empty list indicating nothing was found.
     """
     #print """
     #paginate_find:
     #table_or_query: %r
-    #constructor: %r 
-    #filter: %r, 
+    #constructor: %r
+    #filter: %r,
     #sort_by: %r
     #sort_order: %r
-    #count: %r 
-    #offset: %r 
+    #count: %r
+    #offset: %r
     #limit: %r
     #""" % (table_or_query, constructor, filter, sort_by, sort_order, count, offset, limit )
-    if not query: 
+    if not query:
         if not sess:
             s = session()
-        else: 
+        else:
             s = sess
-        
+
     try:
         # All our table refs
         all_tables  = AllTables()
@@ -128,11 +128,11 @@ def paginate_find(table_or_query, constructor=generic_constructor, filter={}, so
                     properties.append(alias)
                     subqueries.append((stmt, col2, stmt_join, stmt_alias))
 
-                    #count_query = select([func.count(getattr(t1, c1_column_name))], 
-                    #                      getattr(t1,c1_column_name)==getattr(t2,c2_column_name)).label(alias) 
+                    #count_query = select([func.count(getattr(t1, c1_column_name))],
+                    #                      getattr(t1,c1_column_name)==getattr(t2,c2_column_name)).label(alias)
                     #columns.append(count_query)
-        
-                # Add subquery columns to the select 
+
+                # Add subquery columns to the select
                 for stmt, left, right, alias in subqueries :
                     columns.append(alias)
 
@@ -158,23 +158,23 @@ def paginate_find(table_or_query, constructor=generic_constructor, filter={}, so
                 # Attempt to introspect object for its properties in case we're using the generic constructor
                 if hasattr(table_or_query, 'properties') :
                     properties = table_or_query.properties.keys()
-                
+
         for r in relations:
             q = q.options(eagerload(r))
 
         if filter:
             q = q.filter_by(**filter)
-            
+
         if count:
             total = q.count()
 
-            
+
         if sort_by != None :
             get_log().info("sort by: %r" % sort_by)
 	    if sort_by == 'random' :
 	 	q = q.order_by(func.random())
 
-            else: 
+            else:
 		if dict_query :
 		    # Query dict must specify table.column
 		    if '.' in sort_by:
@@ -199,7 +199,7 @@ def paginate_find(table_or_query, constructor=generic_constructor, filter={}, so
         returned = q.all()
 
         if aggregate:
-            if returned: 
+            if returned:
                 returned = [constructor(returned,relations=relations,properties=properties)]
         else:
             returned = [constructor(i,relations=relations,properties=properties) for i in returned]
@@ -212,27 +212,27 @@ def paginate_find(table_or_query, constructor=generic_constructor, filter={}, so
         return (total, returned)
 
     return returned
-    
-    
-# -------------- Generic CRUD Methods ---------------- # 
+
+
+# -------------- Generic CRUD Methods ---------------- #
 
 class DBGetError(Exception):
     """
     Raised when get can not recover a requested object.
     """
-    
+
 class DBAddError(Exception):
     """
     Raised when add could not add a new object.
     """
-    
-    
+
+
 class DBUpdateError(Exception):
     """
     Raised when an update could work on a given object.
     """
-    
-    
+
+
 class DBRemoveError(Exception):
     """
     Raised when an remove could work on a given object.
@@ -242,7 +242,7 @@ class DBRemoveError(Exception):
 def generic_has(obj, id_attr = 'id'):
     """
     Returns a generic 'has' DB method.
-    """    
+    """
     def has(item):
         s = session()
         query = s.query(obj)
@@ -258,7 +258,7 @@ def generic_get(obj, id_attr='id'):
     Returns a generic 'get' DB method
     """
     def get(item):
-        s = session()        
+        s = session()
         query = s.query(obj)
         key = getattr(item, id_attr, item)
         query = query.filter_by(**{id_attr : key})
@@ -272,7 +272,7 @@ def generic_find(obj, id_attr='id'):
     Returns a generic 'find' DB method
     """
     def find(item):
-        s = session()        
+        s = session()
         query = s.query(obj)
         key = getattr(item, id_attr, item)
         query = query.filter_by(**{id_attr : key})
@@ -284,7 +284,7 @@ def generic_update(obj, id_attr = 'id'):
     Returns a generic 'update' DB method
     """
     def update(item, **kwargs):
-        s = session()        
+        s = session()
         # TODO: check for instance, re-add to session?
         query = s.query(obj)
         key = getattr(item, id_attr, item)
@@ -302,7 +302,7 @@ def generic_add(obj):
     Returns a generic 'add' DB method
     """
     def add(**kwargs):
-        s = session()        
+        s = session()
         item = obj(**kwargs)
         [ setattr(item, k, v) for k,v in kwargs.items() ]
         s.add(item)
@@ -316,13 +316,13 @@ def generic_remove(obj, id_attr='id'):
     Returns a generic 'remove' DB method.
     """
     def remove(item):
-        s = session()        
+        s = session()
         key = getattr(item, id_attr, item)
         query = s.query(obj)
         query = query.filter_by(**{id_attr : key})
         if not query.count():
             raise DBRemoveError("The %s '%s' was not found!" % (obj, item))
-                        
+
         db_item = query.first()
         s.delete(db_item)
         s.commit()
