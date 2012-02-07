@@ -267,17 +267,25 @@ def generic_get(obj, id_attr='id'):
         return query.first()
     return get
 
-def generic_find(obj, id_attr='id'):
+
+def generic_find(obj):
+    """Returns a generic 'find' DB method.
+
+    :param obj: This is the SQLAlchemy Mapper / Declaritive base class to use.
+
+    :returns: A generic find function which allows filtering by
+    provided key work arguments. A list of found items is returned
+    or an empty list.
+
     """
-    Returns a generic 'find' DB method
-    """
-    def find(item):
+    def find(**kwargs):
+        """Filter for %s by keyword arguments.""" % obj
         s = session()
         query = s.query(obj)
-        key = getattr(item, id_attr, item)
-        query = query.filter_by(**{id_attr : key})
+        query = query.filter_by(**kwargs)
         return query.all()
     return find
+
 
 def generic_update(obj, id_attr = 'id'):
     """
