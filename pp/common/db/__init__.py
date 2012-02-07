@@ -4,7 +4,7 @@ Common database module
 import uuid
 
 # This is the instance all declaratives must use or
-from setup import Base
+from dbsetup import Base
 
 
 def session():
@@ -14,7 +14,7 @@ def session():
     :returns: An instance of the Session class.
 
     """
-    from setup import Session
+    from dbsetup import Session
     assert Session, "Please setup the database before attempting to use the session"
     return Session()
 
@@ -22,7 +22,7 @@ def metadata():
     """
     Return SQLAlchemy metadata, used for introspecting table definitions
     """
-    from setup import metadata
+    from dbsetup import metadata
     assert metadata, "Please setup the database before attempting to use the metadata"
     return metadata
 
@@ -30,7 +30,7 @@ def engine():
     """
     Return SQLAlchemy engine, used for introspecting table definitions
     """
-    from setup import engine
+    from dbsetup import engine
     assert engine, "Please setup the database before attempting to use the engine"
     return engine
 
@@ -38,7 +38,7 @@ def tables():
     """
     Return all our table definitions.
     """
-    from setup import tables
+    from dbsetup import tables
     assert tables, "Please setup the database before attempting to use the tables"
     return tables
 
