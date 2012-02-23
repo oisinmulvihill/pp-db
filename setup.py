@@ -26,6 +26,7 @@ TestSuite = ''
 
 needed = [
     'sqlalchemy',
+    'importlib',
 ]
 
 EagerResources = [

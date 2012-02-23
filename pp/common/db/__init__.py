@@ -7,6 +7,8 @@ import uuid
 # This is the instance all declaratives must use or
 from dbsetup import Base
 
+# Convenience function to parse db modules from configs
+from dbsetup import modules_from_config
 
 def session():
     """
