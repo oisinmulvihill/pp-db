@@ -26,8 +26,14 @@ TestSuite = ''
 
 needed = [
     'sqlalchemy',
-    'importlib',
 ]
+
+import sys
+# python 2.7+ has importlib:
+if sys.version_info[0] < 3:
+    if sys.version_info[1] < 7:
+        needed.append('importlib')
+
 
 EagerResources = [
     'commondb',
