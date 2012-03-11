@@ -136,11 +136,11 @@ def init_with_session(bind, session):
     init_modules()
 
 
-def init_from_config(settings, sa_prefix='sqlalchemy.', db_prefix='commondb.', use_transaction=True):
+def init_from_config(settings, prefix='sqlalchemy.', use_transaction=True):
     """ As above but use a settings dict, eg from a Pyramid config
     """
     global Session, engine, Base
-    engine = sqlalchemy.engine_from_config(settings, sa_prefix)
+    engine = sqlalchemy.engine_from_config(settings, prefix)
     if use_transaction:
         from zope.sqlalchemy import ZopeTransactionExtension
         Session = scoped_session(sessionmaker(bind=engine, extension=ZopeTransactionExtension()))
