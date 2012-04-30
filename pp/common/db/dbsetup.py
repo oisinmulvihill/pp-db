@@ -119,7 +119,7 @@ def init(uri, pool_size=5, pool_max_overflow=10, pool_timeout=30, pool_recycle=-
     if use_transaction:
         from zope.sqlalchemy import ZopeTransactionExtension
         Session = scoped_session(sessionmaker(bind=engine, extension=ZopeTransactionExtension()))
-    else:    
+    else:
         Session = scoped_session(sessionmaker(bind=engine))
     Base.metadata.bind = engine
     init_modules()
@@ -144,20 +144,20 @@ def init_from_config(settings, prefix='sqlalchemy.', use_transaction=True):
     if use_transaction:
         from zope.sqlalchemy import ZopeTransactionExtension
         Session = scoped_session(sessionmaker(bind=engine, extension=ZopeTransactionExtension()))
-    else:    
+    else:
         Session = scoped_session(sessionmaker(bind=engine))
     Base.metadata.bind = engine
     init_modules()
 
 
 def init_modules():
-    """ Go through all our modules configured in `setup` and run their 
+    """ Go through all our modules configured in `setup` and run their
         init methods. Fills out the global mappers, tables and bases lookups.
     """
     global tables, bases
     for mod in __modules:
         mod_bases, mod_tables, mod_mappers = mod.init()
-        # TODO: do we need to do anything with the mod_mappers? 
+        # TODO: do we need to do anything with the mod_mappers?
         for b in mod_bases:
             bases[b.__tablename__] = b
         for t in mod_tables:
@@ -167,7 +167,7 @@ def init_modules():
     # Pass the tables into all the mappers
     for mod in __mapper_modules:
         mod.init(tables)
-        
+
 
 def create():
     """Called to create all the tables required for the modules
