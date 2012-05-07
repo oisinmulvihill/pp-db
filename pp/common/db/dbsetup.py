@@ -79,11 +79,16 @@ def setup( modules = [], mappers = [] ):
         else:
             __modules.append(m)
     __mapper_modules.extend(mappers)
-    get_log().info("setup: schema updated")
-    get_log().info("modules:")
-    map(get_log().info, __modules)
-    get_log().info("mapper modules:")
-    map(get_log().info, __mapper_modules)
+    if __modules:
+        get_log().info("Found db modules:")
+        map(get_log().info, __modules)
+    else:
+        get_log().info("No db modules configured")
+    if __mapper_modules:
+        get_log().info("Found mapper modules:")
+        map(get_log().info, __mapper_modules)
+    else:
+        get_log().info("No mappers configured")
 
 
 def init(uri, pool_size=5, pool_max_overflow=10, pool_timeout=30, pool_recycle=-1,
@@ -156,6 +161,8 @@ def init_modules():
     """
     global tables, bases
     for mod in __modules:
+        if not hasattr(mod, 'init'):
+            raise ValueError("Module %r has no 'init' method, is this a database module?" % mod)
         mod_bases, mod_tables, mod_mappers = mod.init()
         # TODO: do we need to do anything with the mod_mappers?
         for b in mod_bases:
