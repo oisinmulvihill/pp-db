@@ -12,6 +12,7 @@ import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
 
+
 def get_log():
     return logging.getLogger("pp.common.db.setup")
 
@@ -55,11 +56,25 @@ def modules_from_config(settings, prefix='commondb.'):
     """
     Returns the list of `pp.common.db` modules from a given config dict
     """
-    module_list  = [ i.strip() for i in settings.get('%smodules' % prefix,'').split('\n') if i.strip() ]
-    return map(importlib.import_module, module_list)
+    def modules():
+        return settings.get('%smodules' % prefix, '').split('\n')
+
+    module_list = [i.strip() for i in modules() if i.strip()]
+
+    try:
+        return map(importlib.import_module, module_list)
+
+    except Exception:
+        # Give some hint to what may have gone wrong i.e. comments or some
+        # order non module / rubbish in the indented list.
+        #
+        get_log().exception(
+            "modules_from_config error: module_list <%s>  - " % module_list
+        )
+        raise
 
 
-def setup( modules = [], mappers = [] ):
+def setup(modules=[], mappers=[]):
     """
     Adds modules and mappers to the commondb registry of known schema items.
     :param modules: list of modules to initialise. If any of these items have a
