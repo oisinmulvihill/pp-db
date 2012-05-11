@@ -311,11 +311,25 @@ def generic_add(obj):
     Returns a generic 'add' DB method
     """
     def add(**kwargs):
+        """
+
+        kwargs contains: no_commit
+
+        If no_commit is present and True, no commit will be performed. It is
+        assumed this is handled elsewhere.
+
+        """
+        no_commit = False
+        if "no_commit" in kwargs:
+            no_commit = True
+            kwargs.pop("no_commit")
+
         s = session()
         item = obj(**kwargs)
-        [ setattr(item, k, v) for k,v in kwargs.items() ]
+        [setattr(item, k, v) for k, v in kwargs.items()]
         s.add(item)
-        s.commit()
+        if not no_commit:
+            s.commit()
         return item
     return add
 
