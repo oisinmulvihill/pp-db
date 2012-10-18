@@ -1,4 +1,5 @@
 syntax: glob
+.settings
 *.DS_Store*
 build/
 dist/
