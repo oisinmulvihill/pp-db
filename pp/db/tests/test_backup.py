@@ -3,6 +3,7 @@ import shutil
 import datetime
 import os
 import logging
+import operator
 
 import mock
 import transaction
@@ -60,7 +61,7 @@ def test_api_restore_points():
         for f in files:
             (backup_dir / f).touch()
         api = backup.DatabaseBackupAPI(mock.Mock(), mock.Mock(), backup_dir)
-        assert api.restore_points == [
+        assert sorted(api.restore_points, key=operator.itemgetter('timestamp')) == [
                 {'id': "58e5f54867606384bae9c27723c3e621", 
                  'timestamp': "20120101-1200",
                  'path': backup_dir / 'foo.db.dump.20120101-1200.gz',
