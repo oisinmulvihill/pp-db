@@ -30,6 +30,7 @@ needed = [
     'path.py',
     'python-dateutil',
     'transaction',
+    'zope.sqlalchemy',
     'mock'
 ]
 
