@@ -10,7 +10,7 @@
 
 .. versionadded::
 
-The :mod:`pp.common.db.utils` module contains some commonly functions.
+The :mod:`pp.db.utils` module contains some commonly functions.
 """
 
 import logging
@@ -18,11 +18,11 @@ import logging
 #from sqlalchemy.orm import eagerload
 #from sqlalchemy.sql import select, func, and_
 
-from pp.common.db import session
+from pp.db import session
 
 
 def get_log():
-    return logging.getLogger('pp.common.db.utils')
+    return logging.getLogger('pp.db.utils')
 
 
 # -------------- Generic CRUD Methods ---------------- #

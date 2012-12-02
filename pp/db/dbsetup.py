@@ -14,7 +14,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 
 
 def get_log():
-    return logging.getLogger("pp.common.db.setup")
+    return logging.getLogger("pp.db.setup")
 
 
 # SQLAlchemy database set up by the init() function:
@@ -52,9 +52,9 @@ __modules = []
 __mapper_modules = []
 
 
-def modules_from_config(settings, prefix='commondb.'):
+def modules_from_config(settings, prefix='pp.db.'):
     """
-    Returns the list of `pp.common.db` modules from a given config dict
+    Returns the list of `pp.db` modules from a given config dict
     """
     def modules():
         return settings.get('%smodules' % prefix, '').split('\n')
@@ -76,9 +76,9 @@ def modules_from_config(settings, prefix='commondb.'):
 
 def setup(modules=[], mappers=[]):
     """
-    Adds modules and mappers to the commondb registry of known schema items.
+    Adds modules and mappers to the db registry of known schema items.
     :param modules: list of modules to initialise. If any of these items have a
-                    '''commondb_setup()''' method on them, it will call this method
+                    '''db_setup()''' method on them, it will call this method
                     to recover a dict of '''{'modules':modules, 'mappers':mappers}'''
                     items instead. Use this to shortcut importing a whole package
                     worth of modules with one call to this method.
@@ -87,8 +87,8 @@ def setup(modules=[], mappers=[]):
     global __modules, __mapper_modules
 
     for m in modules:
-        if hasattr(m, 'commondb_setup'):
-            cfg = m.commondb_setup()
+        if hasattr(m, 'db_setup'):
+            cfg = m.db_setup()
             __modules.extend(cfg['modules'])
             __mapper_modules.extend(cfg['mappers'])
         else:

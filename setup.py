@@ -11,7 +11,7 @@ def get_metadata():
 md = get_metadata()
 
 
-Name='pp-common-db'
+Name='pp-db'
 ProjecUrl="" #""
 Version=md['version']
 Author='Oisin Mulvihill, Edward Easton'
@@ -26,6 +26,8 @@ TestSuite = ''
 
 needed = [
     'sqlalchemy',
+    'path.py',
+    'python-dateutil'
 ]
 
 import sys
@@ -36,7 +38,7 @@ if sys.version_info[0] < 3:
 
 
 EagerResources = [
-    'commondb',
+    'pp',
 ]
 
 ProjectScripts = [
@@ -65,10 +67,11 @@ setup(
     test_suite=TestSuite,
     scripts=ProjectScripts,
     install_requires=needed,
+    test_requires=['mock'],
     packages=find_packages(),
     package_data=PackageData,
     eager_resources = EagerResources,
     entry_points = EntryPoints,
-    namespace_packages = ['pp','pp.common'],
+    namespace_packages = ['pp'],
 
 )
