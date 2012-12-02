@@ -29,6 +29,7 @@ needed = [
     'sqlalchemy',
     'path.py',
     'python-dateutil',
+    'transaction',
     'mock'
 ]
 
