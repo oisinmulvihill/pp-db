@@ -64,14 +64,17 @@ def test_api_restore_points():
                 {'id': "58e5f54867606384bae9c27723c3e621", 
                  'timestamp': "20120101-1200",
                  'path': backup_dir / 'foo.db.dump.20120101-1200.gz',
+                 'metadata': {},
                  },
                 {'id': "82f815406695e376a5b3ef687c8cdeb6",
                  'timestamp': "20120102-1200",
                  'path': backup_dir / 'foo.db.dump.20120102-1200.gz',
+                 'metadata': {},
                  },
                 {'id': "a0200c5e84e10a2b80e41c6114686858", 
                  'timestamp': "20120103-1200",
                  'path': backup_dir / 'foo.db.dump.20120103-1200.gz',
+                 'metadata': {},
                  },
                 ]
     finally:
@@ -101,7 +104,7 @@ def test_api_load():
         api = backup.DatabaseBackupAPI(session, metadata, backup_dir)
         with mock.patch('pp.db.backup.load_database') as load:
             api.load("82f815406695e376a5b3ef687c8cdeb6")
-            load.assert_called_with(session, metadata, backup_dir / 'foo.db.dump.20120102-1200.gz')
+            load.assert_called_with(session.get_bind(), metadata, backup_dir / 'foo.db.dump.20120102-1200.gz')
     finally:
         shutil.rmtree(backup_dir)
 
