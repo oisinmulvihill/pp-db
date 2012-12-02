@@ -24,10 +24,12 @@ Description=Summary
 
 TestSuite = ''
 
+# TODO: fix this tests_require works properly
 needed = [
     'sqlalchemy',
     'path.py',
-    'python-dateutil'
+    'python-dateutil',
+    'mock'
 ]
 
 import sys
@@ -67,7 +69,7 @@ setup(
     test_suite=TestSuite,
     scripts=ProjectScripts,
     install_requires=needed,
-    test_requires=['mock'],
+    tests_require=['mock'],
     packages=find_packages(),
     package_data=PackageData,
     eager_resources = EagerResources,
