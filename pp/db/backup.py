@@ -7,9 +7,12 @@ import gzip
 import logging
 import md5
 import json
+import os
+import contextlib
 
 from path import path
 import dateutil.parser
+from sqlalchemy import text
 
 log = logging.getLogger(__name__)
 
@@ -128,8 +131,68 @@ def load_sqlite(engine, dump_file):
     sqlite.communicate()
 
 
+def drop_generic(engine, metadata):
+    """ Drop everything using sqla metadata
+    """
+    # TODO: using metadata here isn't the most fullproof method - anything that's not 
+    #       referenced in this particular metadata obj won't be dropped
+    metadata.drop_all(engine)
+
+def dump_postgresql(engine, backup_dir):
+    """ This is the equivalent of:
+        pgdump dbname | gzip -c > backup_dir/dbname.dump.20121004-0300.gz
+
+        :returns:   path to new dump file
+    """
+    backup_dir = path(backup_dir)
+    dbname = engine.url.database
+    dump_name = '{}.dump.{}.gz'.format(dbname, datetime.datetime.now().strftime('%Y%m%d-%H%M'))
+    dump_file = backup_dir / dump_name
+    log.info("Dumping Postgresql database to {}".format(dump_file))
+    cmd = ['pg_dump', '-v', '-h', 'localhost', '-U', engine.url.username, dbname]
+    env = dict(os.environ)
+    env['PGPASSWORD'] = engine.url.password
+    with gzip.open(dump_file, 'wb') as dump_fh:
+        pgdump = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE)
+        stdout, _ = pgdump.communicate()
+        [dump_fh.write(line) for line in stdout]
+        
+    return dump_file
+
+def load_postgresql(engine, dump_file):
+    dbname = engine.url.database
+    log.warn("Loading Postgresql database from {}. This will destroy all existing data".format(dump_file))
+    log.warn(engine.url.__dict__)
+    cmd = ['psql', '--host=localhost', '--username=' + engine.url.username, dbname]
+    env = dict(os.environ)
+    env['PGPASSWORD'] = engine.url.password
+    log.warn(cmd)
+    psql = subprocess.Popen(cmd, stdin=subprocess.PIPE, env=env)
+    with gzip.open(dump_file) as dump_file:
+        for line in dump_file:
+            psql.stdin.write(line)
+    psql.communicate()
+
+
+def drop_postgresql(engine, metadata):
+    """  Drop postgresql db. This will require superuser priviledges
+    """
+    # XXX this requires superuser! make it a script or something...
+    # First kill off all open connections or the db drop will hang. 
+    with contextlib.closing(engine.connect()) as connection:
+	txn = connection.begin()
+	connection.execute(text("""
+		select pg_terminate_backend(procpid)
+	        from pg_stat_activity 
+		where datname='{engine.url.database}' 
+		and procpid <> pg_backend_pid()""".format(**locals())))
+	txn.commit()
+    drop_generic(engine, metadata)
+   
+
 ENGINE_MAP = {
-        'sqlite': (dump_sqlite, load_sqlite)
+        'sqlite': (dump_sqlite, load_sqlite, drop_generic),
+        'postgresql': (dump_postgresql, load_postgresql, drop_postgresql)
 }
 
 def dump_database(session_or_engine, backup_dir):
@@ -140,7 +203,7 @@ def dump_database(session_or_engine, backup_dir):
     else:
         engine = session_or_engine
 
-    dump, _ = ENGINE_MAP[engine.name]
+    dump, _, _ = ENGINE_MAP[engine.name]
     return dump(engine, backup_dir)
 
 
@@ -151,9 +214,7 @@ def load_database(session_or_engine, metadata, dump_file):
         engine = session_or_engine.get_bind()
     else:
         engine = session_or_engine
-    _, load = ENGINE_MAP[engine.name]
+    _, load, drop = ENGINE_MAP[engine.name]
     log.warn("Destroying all existing data in database at {}".format(engine.url.database))
-    # TODO: using metadata here isn't the most fullproof method - anything that's not 
-    #       referenced in this particular metadata obj won't be dropped
-    metadata.drop_all(engine)
+    drop(engine, metadata)
     load(engine, dump_file)
