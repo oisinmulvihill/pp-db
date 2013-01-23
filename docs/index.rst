@@ -1,0 +1,23 @@
+.. pp.db documentation master file
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+pp.db
+===============================
+
+.. toctree::
+   :maxdepth: 4
+
+   autodoc/pp.db
+
+.. automodule:: pp.db
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
+
