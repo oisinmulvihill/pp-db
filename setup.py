@@ -1,30 +1,72 @@
-# $HeadURL$
-try:
-    from pkglib.setuptools import setup
-except ImportError:
-    print "PkgLib is not available. Please run \"easy_install pkglib\""
-    import sys
-    sys.exit(1)
+# -*- coding: utf-8 -*-
+"""
+"""
+from setuptools import setup, find_packages
 
-# ------------------ Define your C-extensions here --------------------- #
+Name = 'pp-db'
+ProjectUrl = ""
+Version = "1.0.0"
+Author = 'Edward Easton, Oisin Mulvihill'
+AuthorEmail = ''
+Maintainer = ''
+Summary = 'Common database utils.'
+License = ''
+Description = Summary
+ShortDescription = Summary
 
-# Conventions:
-# Source code under '<package root>/src/'
-# Extension modules names begin with an underscore: eg, '_xyz'
-# to differentiate them from regular Python modules.
+needed = [
+    "sqlalchemy",
+    "path.py",
+    "python-dateutil",
+    "transaction",
+    "zope.sqlalchemy",
+]
 
-# import numpy
-# extra_compile_args = ['-O0']
+test_needed = [
+    "pytest",
+    "pytest-cov",
+    "mock",
+]
 
-# setup( ext_modules = [
-#        Extension('acme.mypackage._foo', ['src/foo1.c', 'src/foo2.c']  \
-#                   include_dirs=[ numpy.get_include() ],
-#                   extra_compile_args=extra_compile_args,
-#        ),
-#        Extension('acme.mypackage._bar', ['src/bar1.c', 'src/bar2.c']  \
-#                   include_dirs=[ numpy.get_include() ],
-#                   extra_compile_args=extra_compile_args,
-#       ),
-# ])
+test_suite = 'pp.db.tests'
 
-setup()
+EagerResources = [
+    'pp',
+]
+
+ProjectScripts = [
+]
+
+PackageData = {
+    '': ['*.*'],
+}
+
+EntryPoints = """
+"""
+
+setup(
+    url=ProjectUrl,
+    name=Name,
+    zip_safe=False,
+    version=Version,
+    author=Author,
+    author_email=AuthorEmail,
+    description=ShortDescription,
+    long_description=Description,
+    classifiers=[
+        "Topic :: Software Development :: Libraries",
+    ],
+    keywords='python',
+    license=License,
+    scripts=ProjectScripts,
+    install_requires=needed,
+    tests_require=test_needed,
+    test_suite=test_suite,
+    include_package_data=True,
+    packages=find_packages(),
+    package_data=PackageData,
+    eager_resources=EagerResources,
+    entry_points=EntryPoints,
+    namespace_packages=['pp'],
+)
+
